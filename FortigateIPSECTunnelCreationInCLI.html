@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FortiGate IPsec Tunnel CLI Generator</title>
+<!-- Google Fonts for Technical & Modern Look -->
+<link href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans:400,600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css?family=Fira+Mono:400,500&display=swap" rel="stylesheet" />
+<style>
+  /* Base & Typography */
+  body {
+    font-family: 'IBM Plex Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #181a22 0%, #222a3a 100%);
+    color: #F3F6FA;
+    margin: 0;
+    padding: 20px;
+    min-height: 100vh;
+  }
+  pre, code, .output-block {
+    font-family: 'Fira Mono', 'Source Code Pro', monospace;
+  }
+  /* Container & Cards with Glassmorphism & Depth */
+  main {
+    max-width: 900px;
+    margin: auto;
+    background: rgba(33,37,51, 0.75);
+    box-shadow: 0 8px 32px 0 rgba(12,18,34,0.18);
+    backdrop-filter: blur(13px) saturate(140%);
+    border: 1.3px solid rgba(100,120,190,0.11);
+    border-radius: 12px;
+    padding: 20px 30px 30px;
+    opacity: 1; /* Changed to visible immediately */
+  }
+  .form-section {
+    margin-bottom: 35px;
+    background: rgba(40,52,74,0.92);
+    box-shadow: 0 2px 12px 0 rgba(39,81,173,0.07);
+    border: 1px solid rgba(80,120,160,0.08);
+    border-radius: 10px;
+    padding: 22px 24px;
+  }
+  .form-section h2 {
+    margin-top: 0;
+    color: #39D482;
+    border-bottom: 2px solid #458FF6;
+    padding-bottom: 8px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-shadow: 0 2px 8px #191f26;
+  }
+  /* Headings */
+  h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: 700;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+    text-shadow: 0 3px 10px #111822cc;
+  }
+  /* Inputs */
+  .input-group {
+    display: flex;
+    align-items: center;
+    margin: 12px 0;
+  }
+  .input-group label {
+    min-width: 180px;
+    font-weight: 600;
+    color: #ADB8C7;
+    user-select: none;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+  }
+  .input-group input[type="text"],
+  .input-group input[type="password"],
+  .input-group select {
+    flex: 1;
+    padding: 12px 14px;
+    border-radius: 8px;
+    border: 1.5px solid #2E3952;
+    font-size: 1rem;
+    background-color: #232B3E;
+    color: #F3F6FA;
+    outline: none;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    text-shadow: 0 1px 3px #00000095;
+  }
+  .input-group input[type="text"]:focus,
+  .input-group input[type="password"]:focus,
+  .input-group select:focus {
+    border-color: #39D482;
+    box-shadow: 0 0 12px #39D482aa;
+    background-color: #1f2a3b;
+    color: #efffff;
+  }
+  .input-error {
+    border-color: #FF6F61 !important;
+    background-color: #3D2730 !important;
+  }
+  .error-msg {
+    flex: 1;
+    font-size: 0.9rem;
+    color: #FF6F61;
+    font-style: italic;
+    padding-left: 6px;
+    user-select: none;
+    letter-spacing: 0.6px;
+  }
+  /* PSK toggle button */
+  .psk-wrapper {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+  .psk-wrapper input {
+    flex-grow: 1;
+    margin-right: 10px;
+  }
+  .toggle-psk-btn {
+    background: #39D482;
+    border: none;
+    color: #222;
+    cursor: pointer;
+    padding: 9px 16px;
+    border-radius: 12px;
+    font-weight: 600;
+    user-select: none;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 0 10px #39D482cc;
+  }
+  .toggle-psk-btn:hover {
+    background: #458FF6;
+    color: #fff;
+    box-shadow: 0 0 14px #458FF6cc;
+  }
+  /* Buttons with glow focus */
+  button#generateBtn {
+    display: block;
+    margin: 12px auto 36px;
+    background-color: #458FF6;
+    border: none;
+    color: #F3F6FA;
+    padding: 16px 40px;
+    font-size: 1.25rem;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: 700;
+    box-shadow: 0 0 18px #39D482cc;
+    transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+    user-select: none;
+  }
+  button#generateBtn:hover {
+    background-color: #39D482;
+    color: #232B3E;
+    box-shadow: 0 0 24px #39D482ee, 0 0 38px #39D482cc;
+  }
+  /* Output blocks with subtle gradient and glow */
+  .output-block {
+    background: rgba(25,26,44,0.85);
+    border: 1px solid rgba(60,180,180,0.08);
+    font-family: 'Fira Mono', monospace !important;
+    font-size: 1rem;
+    white-space: pre-wrap;
+    line-height: 1.5;
+    padding: 22px 28px;
+    border-radius: 14px;
+    color: #ADB8C7;
+    box-shadow: inset 0 0 12px #39D48233;
+    user-select: text;
+  }
+  .output-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .output-header h3 {
+    margin: 0;
+    font-weight: 600;
+    color: #39D482;
+    user-select: none;
+    letter-spacing: 1.1px;
+  }
+  .copy-button {
+    background: #39D482;
+    border: none;
+    color: #232B3E;
+    font-weight: 700;
+    padding: 9px 16px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background-color 0.25s, color 0.25s;
+    box-shadow: 0 0 18px #39D482bb;
+  }
+  .copy-button:hover {
+    background: #458FF6;
+    color: #fff;
+    box-shadow: 0 0 24px #458FF6cc;
+  }
+  /* Responsive improvements */
+  @media (max-width: 600px) {
+    .input-group {
+      flex-wrap: wrap;
+    }
+    .input-group label {
+      flex: 0 0 100%;
+      margin-bottom: 6px;
+      font-size: 0.95rem;
+    }
+    .input-group input[type="text"],
+    .input-group input[type="password"],
+    .input-group select {
+      flex: 1 0 100%;
+      font-size: 1rem;
+    }
+    .psk-wrapper {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .psk-wrapper button.toggle-psk-btn {
+      margin-top: 10px;
+      width: 100%;
+    }
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>FortiGate IPsec Tunnel CLI Generator</h1>
+    <form id="vpnForm" novalidate>
+      <section class="form-section" aria-labelledby="phase1Label">
+        <h2 id="phase1Label">Phase 1 Parameters</h2>
+        <div class="input-group">
+          <label for="p1_name">Tunnel Name *</label>
+          <input type="text" id="p1_name" name="p1_name" required autocomplete="off" />
+          <span class="error-msg" aria-live="polite"></span>
+        </div>
+        <div class="input-group">
+          <label for="wan_iface">WAN Interface *</label>
+          <input type="text" id="wan_iface" name="wan_iface" required autocomplete="off" />
+          <span class="error-msg"></span>
+        </div>
+        <div class="input-group">
+          <label for="remote_gw">Remote Gateway IP *</label>
+          <input type="text" id="remote_gw" name="remote_gw" required autocomplete="off" />
+          <span class="error-msg"></span>
+        </div>
+        <div class="input-group">
+          <label for="psk">Pre-Shared Key *</label>
+          <div class="psk-wrapper">
+            <input type="password" id="psk" name="psk" required autocomplete="new-password" />
+            <button type="button" class="toggle-psk-btn" aria-label="Show or hide Pre-Shared Key">Show</button>
+          </div>
+          <span class="error-msg"></span>
+        </div>
+        <div class="input-group">
+          <label for="ike_version">IKE Version *</label>
+          <select id="ike_version" name="ike_version" required>
+            <option value="2">IKEv2</option>
+            <option value="1">IKEv1</option>
+          </select>
+          <span class="error-msg"></span>
+        </div>
+        <div class="input-group">
+          <label for="mode">Mode *</label>
+          <select id="mode" name="mode" required>
+            <option value="main">Main</option>
+            <option value="aggressive">Aggressive</option>
+          </select>
+          <span class="error-msg"></span>
+        </div>
+        <div class="input-group">
+          <label for="dhgrp">DH Group *</label>
+          <select id="dhgrp" name="dhgrp" required>
+            <option value="2">2 (1024-bit)</option>
+            <option value="5">5 (1536-bit)</option>
+            <option value="14" selected>14 (2048-bit)</option>
+            <option value="15">15 (3072-bit)</option>
+            <option value="16">16 (4096-bit)</option>
+          </select>
+          <span class="error-msg"></span>
+        </div>
+        <div class="input-group">
+          <label for="proposal_encry">Encryption Algorithms *</label>
+          <select id="proposal_encry" name="proposal_encry" required>
+            <option value="aes128">AES128</option>
+            <option value="aes256" selected>AES256</option>
+            <option value="3des">3DES</option>
+            <option value="des">DES</option>
+            <option value="none">None</option>
+          </select>
+          <span class="error-msg"></span>
+        </div>
+        <div class="input-group">
+          <label for="proposal_auth">Authentication Algorithms *</label>
+          <select id="proposal_auth" name="proposal_auth" required>
+            <option value="sha1">SHA1</option>
+            <option value="sha256" selected>SHA256</option>
+            <option value="sha384">SHA384</option>
+            <option value="md5">MD5</option>
+            <option value="none">None</option>
+          </select>
+          <span class="error-msg"></span>
+        </div>
+        <div class="input-group">
+          <label for="dpd">DPD *</label>
+          <select id="dpd" name="dpd" required>
+            <option value="on-idle" selected>on-idle</option>
+            <option value="on-demand">on-demand</option>
+            <option value="disable">disable</option>
+          </select>
+          <span class="error-msg"></span>
+        </div>
+        <div class="input-group">
+          <label for="keepalive">Keepalive *</label>
+          <select id="keepalive" name="keepalive" required>
+            <option value="enable" selected>Enable</option>
+            <option value="disable">Disable</option>
+          </select>
+          <span class="error-msg"></span>
+        </div>
+        <div class="input-group">
+          <label for="nattraversal">NAT Traversal *</label>
+          <select id="nattraversal" name="nattraversal" required>
+            <option value="enable" selected>Enable</option>
+            <option value="disable">Disable</option>
+          </select>
+          <span class="error-msg"></span>
+        </div>
+        <div class="input-group">
+          <label for="auto_negotiate">Auto-negotiate *</label>
+          <select id="auto_negotiate" name="auto_negotiate" required>
+            <option value="enable" selected>Enable</option>
+            <option value="disable">Disable</option>
+          </select>
+          <span class="error-msg"></span>
+        </div>
+      </section>
+      <section class="form-section" aria-labelledby="phase2Label">
+        <h2 id="phase2Label">Phase 2 Parameters</h2>
+        <div class="input-group">
+          <label for="local_subnet">Local Subnet (src) *</label>
+          <input type="text" id="local_subnet" name="local_subnet" placeholder="e.g. 10.0.1.0/24" required autocomplete="off" />
+          <span class="error-msg" aria-live="polite"></span>
+        </div>
+        <div class="input-group">
+          <label for="remote_subnet">Remote Subnet (dst) *</label>
+          <input type="text" id="remote_subnet" name="remote_subnet" placeholder="e.g. 10.0.2.0/24" required autocomplete="off" />
+          <span class="error-msg"></span>
+        </div>
+        <div class="input-group">
+          <label for="phase2_proposal_encry">Encryption Algorithms *</label>
+          <select id="phase2_proposal_encry" name="phase2_proposal_encry" required>
+            <option value="aes128">AES128</option>
+            <option value="aes256" selected>AES256</option>
+            <option value="3des">3DES</option>
+            <option value="des">DES</option>
+            <option value="none">None</option>
+          </select>
+          <span class="error-msg"></span>
+        </div>
+        <div class="input-group">
+          <label for="phase2_proposal_auth">Authentication Algorithms *</label>
+          <select id="phase2_proposal_auth" name="phase2_proposal_auth" required>
+            <option value="sha1">SHA1</option>
+            <option value="sha256" selected>SHA256</option>
+            <option value="sha384">SHA384</option>
+            <option value="md5">MD5</option>
+            <option value="none">None</option>
+          </select>
+          <span class="error-msg"></span>
+        </div>
+        <div class="input-group">
+          <label for="pfs">PFS group (DH) *</label>
+          <select id="pfs" name="pfs" required>
+            <option value="14" selected>14 (2048-bit)</option>
+            <option value="5">5 (1536-bit)</option>
+            <option value="2">2 (1024-bit)</option>
+            <option value="0">Disable</option>
+          </select>
+          <span class="error-msg"></span>
+        </div>
+        <div class="input-group">
+          <label for="replay">Replay Detection *</label>
+          <select id="replay" name="replay" required>
+            <option value="enable" selected>Enable</option>
+            <option value="disable">Disable</option>
+          </select>
+          <span class="error-msg"></span>
+        </div>
+        <div class="input-group">
+          <label for="phase2_keepalive">Keepalive *</label>
+          <select id="phase2_keepalive" name="phase2_keepalive" required>
+            <option value="enable" selected>Enable</option>
+            <option value="disable">Disable</option>
+          </select>
+          <span class="error-msg"></span>
+        </div>
+        <div class="input-group">
+          <label for="phase2_nat">NAT Traversal *</label>
+          <select id="phase2_nat" name="phase2_nat" required>
+            <option value="enable" selected>Enable</option>
+            <option value="disable">Disable</option>
+          </select>
+          <span class="error-msg"></span>
+        </div>
+        <div class="input-group">
+          <label for="phase2_auto_negotiate">Auto-negotiate *</label>
+          <select id="phase2_auto_negotiate" name="phase2_auto_negotiate" required>
+            <option value="enable" selected>Enable</option>
+            <option value="disable">Disable</option>
+          </select>
+          <span class="error-msg"></span>
+        </div>
+      </section>
+      <button id="generateBtn" type="button" aria-label="Generate CLI Scripts">
+        Generate CLI Scripts
+      </button>
+    </form>
+    <section class="output-section">
+      <div class="output-header">
+        <h3>Phase 1 CLI Script</h3>
+        <button class="copy-button" id="copyP1" aria-label="Copy Phase 1 CLI Script">Copy</button>
+      </div>
+      <pre id="p1_output" class="output-block" aria-live="polite" tabindex="0" role="textbox"></pre>
+    </section>
+    <section class="output-section">
+      <div class="output-header">
+        <h3>Phase 2 CLI Script</h3>
+        <button class="copy-button" id="copyP2" aria-label="Copy Phase 2 CLI Script">Copy</button>
+      </div>
+      <pre id="p2_output" class="output-block" aria-live="polite" tabindex="0" role="textbox"></pre>
+    </section>
+</main>
+<script>
+  function validateIPv4(ip) {
+    const pattern = /^(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)){3}$/;
+    return pattern.test(ip.trim());
+  }
+  function validateSubnet(subnet) {
+    const pattern = /^(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)){3}\/([0-9]|[12][0-9]|3[0-2])$/;
+    return pattern.test(subnet.trim());
+  }
+  function setError(input, message) {
+    const group = input.closest('.input-group');
+    if (!group) return;
+    const errorSpan = group.querySelector('.error-msg');
+    if (message) {
+      input.classList.add('input-error');
+      if (errorSpan) errorSpan.textContent = message;
+    } else {
+      input.classList.remove('input-error');
+      if (errorSpan) errorSpan.textContent = '';
+    }
+  }
+  function validateField(input) {
+    const id = input.id;
+    const val = input.value.trim();
+    if (!val) {
+      setError(input, 'This field is required.');
+      return false;
+    }
+    if (id === 'remote_gw') {
+      if (!validateIPv4(val)) {
+        setError(input, 'Must be a valid IPv4 address (no subnet).');
+        return false;
+      }
+    }
+    if (id === 'local_subnet' || id === 'remote_subnet') {
+      if (!validateSubnet(val)) {
+        setError(input, 'Must be a valid subnet, e.g. 192.168.1.0/24');
+        return false;
+      }
+    }
+    setError(input, '');
+    return true;
+  }
+  const requiredInputs = [
+    'p1_name', 'wan_iface', 'remote_gw', 'psk', 'local_subnet', 'remote_subnet',
+  ];
+  requiredInputs.forEach(id => {
+    const el = document.getElementById(id);
+    el.addEventListener('input', () => validateField(el));
+  });
+  const togglePskBtn = document.querySelector('.toggle-psk-btn');
+  const pskInput = document.getElementById('psk');
+  togglePskBtn.addEventListener('click', () => {
+    if (pskInput.type === 'password') {
+      pskInput.type = 'text';
+      togglePskBtn.textContent = 'Hide';
+      togglePskBtn.setAttribute('aria-label', 'Hide Pre-Shared Key');
+    } else {
+      pskInput.type = 'password';
+      togglePskBtn.textContent = 'Show';
+      togglePskBtn.setAttribute('aria-label', 'Show Pre-Shared Key');
+    }
+  });
+  function joinProposals(encryptions, auths) {
+    let proposals = [];
+    encryptions.forEach(e => {
+      auths.forEach(a => {
+        if (e !== 'none' && a !== 'none') {
+          proposals.push(`${e}-${a}`);
+        }
+      });
+    });
+    return proposals.join(' ');
+  }
+  function clearOutputs() {
+    document.getElementById('p1_output').textContent = '';
+    document.getElementById('p2_output').textContent = '';
+  }
+  function generateScripts() {
+    let allValid = true;
+    requiredInputs.forEach(id => {
+      const el = document.getElementById(id);
+      if (!validateField(el)) allValid = false;
+    });
+    const selects = document.querySelectorAll('#vpnForm select[required]');
+    selects.forEach(sel => {
+      if (!sel.value) {
+        sel.classList.add('input-error');
+        allValid = false;
+      } else {
+        sel.classList.remove('input-error');
+      }
+    });
+    const multiSelectIds = [
+      'proposal_encry', 'proposal_auth', 'phase2_proposal_encry', 'phase2_proposal_auth',
+    ];
+    multiSelectIds.forEach(id => {
+      const sel = document.getElementById(id);
+      if (!sel.selectedOptions.length) {
+        sel.classList.add('input-error');
+        allValid = false;
+      } else {
+        sel.classList.remove('input-error');
+      }
+    });
+    if (!allValid) {
+      alert('Please fix errors in the form before generating CLI scripts.');
+      clearOutputs();
+      return;
+    }
+    const p1name = document.getElementById('p1_name').value.trim();
+    const wan_iface = document.getElementById('wan_iface').value.trim();
+    const remote_gw = document.getElementById('remote_gw').value.trim();
+    const psk = document.getElementById('psk').value.trim();
+    const ike_version = document.getElementById('ike_version').value;
+    const mode = document.getElementById('mode').value;
+    const dhgrp = document.getElementById('dhgrp').value;
+    const proposal_encry = Array.from(document.getElementById('proposal_encry').selectedOptions).map(o => o.value);
+    const proposal_auth = Array.from(document.getElementById('proposal_auth').selectedOptions).map(o => o.value);
+    const dpd = document.getElementById('dpd').value;
+    const keepalive = document.getElementById('keepalive').value;
+    const nattraversal = document.getElementById('nattraversal').value;
+    const auto_negotiate = document.getElementById('auto_negotiate').value;
+    const local_subnet = document.getElementById('local_subnet').value.trim();
+    const remote_subnet = document.getElementById('remote_subnet').value.trim();
+    const phase2_proposal_encry = Array.from(document.getElementById('phase2_proposal_encry').selectedOptions).map(o => o.value);
+    const phase2_proposal_auth = Array.from(document.getElementById('phase2_proposal_auth').selectedOptions).map(o => o.value);
+    const pfs = document.getElementById('pfs').value;
+    const replay = document.getElementById('replay').value;
+    const phase2_keepalive = document.getElementById('phase2_keepalive').value;
+    const phase2_nat = document.getElementById('phase2_nat').value;
+    const phase2_auto_negotiate = document.getElementById('phase2_auto_negotiate').value;
+    const phase1_proposal = joinProposals(proposal_encry, proposal_auth);
+    const phase2_proposal = joinProposals(phase2_proposal_encry, phase2_proposal_auth);
+    const phase2_dhgrp_cli = (pfs === '0') ? '' : `set dhgrp ${pfs}`;
+    const phase2_nat_cli = (phase2_nat === 'enable') ? 'set natip enable' : '';
+    const p1_cli = `config vpn ipsec phase1-interface
+    edit "${p1name}"
+        set interface "${wan_iface}"
+        set ike-version ${ike_version}
+        set mode ${mode}
+        set remote-gw "${remote_gw}"
+        set psksecret "${psk}"
+        set proposal ${phase1_proposal}
+        set dhgrp ${dhgrp}
+        set dpd ${dpd}
+        set nattraversal ${nattraversal}
+        set keepalive ${keepalive}
+        set auto-negotiate ${auto_negotiate}
+    next
+end`;
+    const p2_cli = `config vpn ipsec phase2-interface
+    edit "${p1name}"
+        set phase1name "${p1name}"
+        set src-subnet "${local_subnet}"
+        set dst-subnet "${remote_subnet}"
+        set proposal ${phase2_proposal}
+        ${phase2_dhgrp_cli}
+        set replay ${replay}
+        set keepalive ${phase2_keepalive}
+        ${phase2_nat_cli}
+        set auto-negotiate ${phase2_auto_negotiate}
+    next
+end`;
+    document.getElementById('p1_output').textContent = p1_cli;
+    document.getElementById('p2_output').textContent = p2_cli;
+  }
+  document.getElementById('generateBtn').addEventListener('click', generateScripts);
+  function copyText(elementId) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    navigator.clipboard.writeText(el.textContent).then(() => {
+      alert('Copied to clipboard!');
+    }).catch(() => {
+      alert('Copy failed. Please copy manually.');
+    });
+  }
+  document.getElementById('copyP1').addEventListener('click', () => copyText('p1_output'));
+  document.getElementById('copyP2').addEventListener('click', () => copyText('p2_output'));
+</script>
+</body>
+</html>
